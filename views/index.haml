@@ -11,6 +11,8 @@
   %body
     #page
       .staging_statuses
+        - unless @changed_files.any?
+          %h1.no_results= no_results
         - @changed_files.sort.each do |staging_status, change_types|
           .staging_status{class: staging_status}
             %h2.stagin_status_header=format_staging_status(staging_status)

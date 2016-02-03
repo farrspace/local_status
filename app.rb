@@ -115,6 +115,10 @@ helpers do
 
     result.join
   end
+  def no_results
+    font_awesome %w[paper-plane-o paper-plane flag-checkered trophy bed home moon-o rocket fighter-jet magic plane].sample
+  end
+
 end
 
 get "/" do
