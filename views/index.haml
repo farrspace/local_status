@@ -6,15 +6,15 @@
     %title local_status
     %link{href: "/server_add.png", rel: "shortcut icon"}
     %link{rel: "stylesheet", type: "text/css", href: "/index.css"}
+    %link{rel: "stylesheet", type: "text/css", href: "/external/font-awesome/font-awesome.css"}
 
   %body
     #page
-      %h1 local_status
       .staging_statuses
-        - @changed_files.each do |staging_status, change_types|
+        - @changed_files.sort.each do |staging_status, change_types|
           .staging_status{class: staging_status}
-            %h2=staging_status
-            - change_types.each do |change_type, files|
+            %h2.stagin_status_header=format_staging_status(staging_status)
+            - change_types.sort.each do |change_type, files|
               .file_section{class: change_type}
                 %h3.change_type_header{class: change_type}
                   .change_type_content= change_type

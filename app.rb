@@ -4,8 +4,16 @@ require "tilt/haml"
 require "tilt/sass"
 
 helpers do
+  def font_awesome(icon_name, extra_classes="")
+    icon_name ||= ""
+    icon_name.gsub!(' ', '-')
+    icon_name.gsub!(/[^\w-]/, '')
+    "<i class=\"fa fa-fw #{extra_classes} fa-#{icon_name}\"></i>"
+  end
+  alias_method :fa, :font_awesome
+
   def changed_files
-    gs = `cd /Users/farr/dev/working; git status -s`
+    gs = `cd ~/projects/local_status; git status -s`
 
     files = {}
 
@@ -18,15 +26,17 @@ helpers do
       when "M "
         [:staged, :modified]
       when "??"
-        [:unstaged, :untracked]
+        [:untracked, :untracked]
       when "A "
         [:staged, :added]
       when " D"
         [:unstaged, :deleted]
       when "D "
         [:staged, :deleted]
-      when "MM", "AA", "DD"
-        [:staged, :conflict]
+      when "AA", "DD"
+        [:conflicted, :conflict]
+      when "MM"
+        [:staged_unstaged, :modified]
       end
 
       files[staging_status] ||= {}
@@ -44,12 +54,54 @@ helpers do
     [folders, file]
   end
 
+  def format_staging_status(status)
+    case status.to_s
+    when "staged"
+      font_awesome("cloud upload")
+    when "unstaged"
+      font_awesome "folder open"
+    when "untracked"
+      font_awesome("cubes")
+    when "staged_unstaged"
+      font_awesome("cloud upload") + " / " + font_awesome("folder open")
+    when "conflicted"
+      font_awesome("bomb")
+    else
+      status
+    end
+  end
+
   def format_file(path)
     folders, file = understand_path(path)
 
     result = []
 
     result << '<span class="path">'
+
+    if file
+      icon = if !file["."]
+        "gear"
+      elsif file.end_with?(".json")
+        "indent"
+      elsif file.end_with?(".yml")
+        "tree"
+      elsif file.end_with?("_spec.rb")
+        "flask"
+      elsif file.end_with?(".rb")
+        "diamond"
+      elsif file.end_with?(".html.erb", ".html.haml", ".html")
+        "file-code-o"
+      elsif file.end_with?(".js.erb", ".js", ".js.map")
+        "meh o"
+      elsif file.end_with?(".css", ".scss", ".less")
+        "paint-brush"
+      else
+        "cube"
+      end
+      result << font_awesome(icon)
+    else
+      result << font_awesome("folder o")
+    end
 
     folders.each do |folder|
       result << '<span class="path-folder">' + folder + '</span><span class="path-slash">/</span>'
