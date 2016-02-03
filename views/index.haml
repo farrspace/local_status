@@ -1,0 +1,24 @@
+!!! 5
+%html
+  %head
+    %meta{charset: "UTF-8"}
+    %meta{:"http-equiv" => "refresh", :content => "20"}
+    %title local_status
+    %link{href: "/server_add.png", rel: "shortcut icon"}
+    %link{rel: "stylesheet", type: "text/css", href: "/index.css"}
+
+  %body
+    #page
+      %h1 local_status
+      .staging_statuses
+        - @changed_files.each do |staging_status, change_types|
+          .staging_status{class: staging_status}
+            %h2=staging_status
+            - change_types.each do |change_type, files|
+              .file_section{class: change_type}
+                %h3.change_type_header{class: change_type}
+                  .change_type_content= change_type
+                %ol.files
+                  - files.each do |file|
+                    %li.file= format_file(file)
+
